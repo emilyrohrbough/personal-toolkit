@@ -1,0 +1,56 @@
+{
+  "name": "personal-toolkit",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Personal toolkit + configs + scripts to help make my dev life easier.",
+  "engines": {
+    "node": ">=8.9.2 <12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emilyrohrbough/personal-toolkit.git"
+  },
+  "keywords": [
+    "Scripts",
+    "Tools"
+  ],
+  "author": "Emily Rohrbough",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/emilyrohrbough/personal-toolkit/issues"
+  },
+  "eslintConfig": {
+    "extends": "terra",
+    "settings": {
+      "polyfills": [
+        "Promise",
+        "Map"
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "scripts/**/*.js"
+        ],
+        "rules": {
+          "no-console": "off"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "clean:install": "npm run clean && npm install",
+    "lint": "eslint --ext .js,.jsx .",
+    "test": "npm run lint"
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.0",
+    "glob": "^7.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-terra": "^3.0.0",
+    "gh-pages": "^2.0.1"
+  }
+}
