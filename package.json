@@ -19,6 +19,9 @@
   "bugs": {
     "url": "https://github.com/emilyrohrbough/personal-toolkit/issues"
   },
+  "bin": {
+    "css-vars": "bin/css-vars.js"
+  },
   "eslintConfig": {
     "extends": "terra",
     "settings": {
@@ -45,7 +48,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "fs-extra": "^9.0.0",
+    "commander": "^5.0.0",
     "glob": "^7.1.2"
   },
   "devDependencies": {
