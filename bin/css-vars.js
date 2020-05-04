@@ -12,11 +12,11 @@ program
   .option('--report', 'output report on theme coverage')
   .option('-u, --update', 'update theme files with missing css vars')
   .action((modulePath, { theme, report, update }) => {
-    console.log(modulePath, theme, report, update);
     validateThemes({
       modulePath,
       ...theme && { themes: [theme] },
       ...update && { update: true },
+      ...report && { report: true },
     });
   });
 

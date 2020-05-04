@@ -69,7 +69,7 @@ const updateThemeVariables = (currentVars, overrideVars) => {
   const usedVars = [];
 
   Object.entries(overrideVars).forEach(([variable, value]) => {
-    if (vars[variable] !== undefined || vars[variable] !== '') {
+    if (vars[variable] !== undefined) {
       vars[variable] = value;
       usedVars.push(variable);
     }
@@ -171,24 +171,28 @@ const validateTheme = ({
   defaultSCSSFiles.forEach((filePath) => {
     const fileName = path.parse(filePath).name;
 
-    // if new theme strategy file does not exist, create one with all css vars using default theme value
-    if (!themeFiles.some(name => name.match(fileName))) {
-      const { vars, usedVars } = updateThemeVariables(defaultCssVars[fileName], actualDeprecatedThemeVars);
-      updatedThemeVars[fileName] = vars;
-      // remove used vars from the deprecated theme file
-      usedVars.forEach((variable) => {
-        delete updatedDeprecatedThemeVars[variable];
-      });
-    } else {
-      // add any new css vars to the theme with the default value
-      const { vars } = updateThemeVariables(defaultCssVars[fileName], actualThemeVars[fileName]);
-      updatedThemeVars[fileName] = vars;
+    // create vars for theme using default theme values for theme and merge in deprecated theme values
+    const { vars, usedVars } = updateThemeVariables(defaultCssVars[fileName], updatedDeprecatedThemeVars);
+    updatedThemeVars[fileName] = vars;
+
+    // remove used vars from the deprecated theme file
+    usedVars.forEach((variable) => {
+      delete updatedDeprecatedThemeVars[variable];
+    });
+
+    // update vars values to use themed var values if they exist
+    if (actualThemeVars[fileName]) {
+      const updatedResult = updateThemeVariables(defaultCssVars[fileName], actualThemeVars[fileName]);
+      updatedThemeVars[fileName] = updatedResult.vars;
     }
+
+    // update theme file
     if (update) {
       writeThemeFile(filePath, theme, updatedThemeVars[fileName]);
     }
   });
 
+  // update deprecated theme file
   if (update && deprecatedThemeFiles[0]) {
     updateDeprecatedFile(deprecatedThemeFiles[0], updatedDeprecatedThemeVars);
   }
@@ -206,6 +210,7 @@ const validateThemes = ((options) => {
   const modulePath = options.modulePath || './';
   const themes = options.themes || THEMES;
   const update = options.update || false;
+  const report = options.report || false;
 
   const defaultSCSSFiles = getDefaultSCSSFiles(modulePath);
   const defaultCssVars = getThemeVars(defaultSCSSFiles);
@@ -219,7 +224,9 @@ const validateThemes = ((options) => {
     results[theme] = result;
   });
 
-  console.log(JSON.stringify(results, null, 2));
+  if (report) {
+    console.log(JSON.stringify(results, null, 2));
+  }
 });
 
 exports.validateTheme = validateTheme;
