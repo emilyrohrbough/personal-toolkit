@@ -48,6 +48,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
+    "fs-extra": "^9.0.0",
     "commander": "^5.0.0",
     "glob": "^7.1.2"
   },
