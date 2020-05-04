@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 
-const REGEX = new RegExp(/(@include terra-inline-svg-var\(){0,1}'{0,1}'{0,1}--terra-[a-z]+([a-z0-9-]+[a-z0-9]+)?'{0,1}((:|,) ([#."=':/><,A-Za-z0-9-()\s]+);){0,1}/, 'g');
+const REGEX = new RegExp(/(@include terra-inline-svg-var\(){0,1}'{0,1}'{0,1}--([a-z0-9-]+[a-z0-9]+)?'{0,1}((:|,) ([#."=':/><,A-Za-z0-9-()\s]+);){0,1}/, 'g');
 
-const VAR_REGEX = new RegExp(/--terra-[a-z]+([a-z0-9-]+[a-z0-9]+)?/, 'g');
+const VAR_REGEX = new RegExp(/--([a-z0-9-]+[a-z0-9]+)?/, 'g');
 const INLINE_SVG = 'inline-svg(';
 const INLINE_SVG_MIXIN = '@include terra-inline-svg-var(';
 const MIXIN_IMPORT = '@import \'~terra-mixins/lib/Mixins\';\n';
