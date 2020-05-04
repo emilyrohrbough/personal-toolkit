@@ -153,10 +153,6 @@ const validateTheme = ({
   theme,
   update,
 }) => {
-  // const modulePath = options.modulePath || './';
-  // const { theme } = options;
-  // const update = options.update || false;
-
   if (!theme) {
     return {
       themeVars: {},
@@ -164,46 +160,45 @@ const validateTheme = ({
     };
   }
 
-  console.log(modulePath)
-  console.log(theme)
-  console.log(update)
-  console.log(defaultSCSSFiles)
-  console.log(defaultVars)
   const deprecatedThemeFiles = getDeprecatedThemeFiles(modulePath, theme);
-  const deprecatedThemeVars = getThemeVars(deprecatedThemeFiles)[theme] || {};
+  const actualDeprecatedThemeVars = getThemeVars(deprecatedThemeFiles)[theme] || {};
+  const updatedDeprecatedThemeVars = { ...actualDeprecatedThemeVars };
 
   const themeFiles = getThemeFiles(modulePath, theme);
   const actualThemeVars = getThemeVars(themeFiles);
-  const expectedThemeVars = getThemeVars(themeFiles);
+  const updatedThemeVars = { ...actualThemeVars };
 
   defaultSCSSFiles.forEach((filePath) => {
     const fileName = path.parse(filePath).name;
 
     // if new theme strategy file does not exist, create one with all css vars using default theme value
     if (!themeFiles.some(name => name.match(fileName))) {
-      const { vars, usedVars } = updateThemeVariables(defaultCssVars[fileName], deprecatedThemeVars);
-      expectedThemeVars[fileName] = vars;
+      const { vars, usedVars } = updateThemeVariables(defaultCssVars[fileName], actualDeprecatedThemeVars);
+      updatedThemeVars[fileName] = vars;
       // remove used vars from the deprecated theme file
       usedVars.forEach((variable) => {
-        delete deprecatedThemeVars[variable];
+        delete updatedDeprecatedThemeVars[variable];
       });
     } else {
       // add any new css vars to the theme with the default value
       const { vars } = updateThemeVariables(defaultCssVars[fileName], actualThemeVars[fileName]);
-      expectedThemeVars[fileName] = vars;
+      updatedThemeVars[fileName] = vars;
     }
     if (update) {
-      writeThemeFile(filePath, theme, expectedThemeVars[fileName]);
+      writeThemeFile(filePath, theme, updatedThemeVars[fileName]);
     }
   });
 
   if (update && deprecatedThemeFiles[0]) {
-    updateDeprecatedFile(deprecatedThemeFiles[0], deprecatedThemeVars);
+    updateDeprecatedFile(deprecatedThemeFiles[0], updatedDeprecatedThemeVars);
   }
 
+  // at this point I was wondering what could be logged for either reporting or jest assertions. Doesn't need a return value.
   return {
     themeVars: actualThemeVars,
-    expectedThemeVars: actualThemeVars,
+    updatedThemeVars,
+    deprecatedThemeVars: actualDeprecatedThemeVars,
+    updatedDeprecatedThemeVars,
   };
 };
 
@@ -215,14 +210,17 @@ const validateThemes = ((options) => {
   const defaultSCSSFiles = getDefaultSCSSFiles(modulePath);
   const defaultCssVars = getThemeVars(defaultSCSSFiles);
 
-  // console.log(defaultSCSSFiles)
-  // console.log('modulePaht', modulePath, 'themes', themes, 'update', update)
-  themes.forEach(theme => validateTheme({
-    modulePath, theme, update, defaultSCSSFiles, defaultCssVars,
-  }));
+  const results = {};
+
+  themes.forEach(theme => {
+    const result = validateTheme({
+      modulePath, theme, update, defaultSCSSFiles, defaultCssVars,
+    });
+    results[theme] = result;
+  });
+
+  console.log(JSON.stringify(results, null, 2));
 });
 
-// console.log(validateTheme('./', 'orion-fusion-theme'));
-// console.log(validateThemes('terra-dialog-modal'))
 exports.validateTheme = validateTheme;
 exports.validateThemes = validateThemes;
