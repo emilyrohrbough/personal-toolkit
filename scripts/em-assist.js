@@ -1,6 +1,6 @@
 const commander = require('commander');
 const packageJson = require('../package.json');
-const { analyzeScreenshots } = require('./analyze-screenshots');
+const { analyzeScreenshots } = require('./screenshots');
 
 commander
   .version(packageJson.version);
