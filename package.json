@@ -39,7 +39,7 @@
     ]
   },
   "bin": {
-    "em": "bin/em-assist-cli.js"
+    "em": "bin/em-assist.js"
   },
   "scripts": {
     "clean": "rm -rf node_modules",
