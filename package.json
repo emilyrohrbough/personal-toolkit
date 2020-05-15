@@ -38,6 +38,9 @@
       }
     ]
   },
+  "bin": {
+    "em": "bin/em-assist-cli.js"
+  },
   "scripts": {
     "clean": "rm -rf node_modules",
     "clean:install": "npm run clean && npm install",
@@ -45,6 +48,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
+    "commander": "^5.1.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.2"
   },
