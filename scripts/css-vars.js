@@ -229,5 +229,4 @@ const validateThemes = ((options) => {
   }
 });
 
-exports.validateTheme = validateTheme;
 exports.validateThemes = validateThemes;

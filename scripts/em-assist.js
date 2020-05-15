@@ -1,6 +1,7 @@
 const commander = require('commander');
 const packageJson = require('../package.json');
 const { analyzeScreenshots } = require('./screenshots');
+const { validateThemes } = require('./css-vars');
 
 commander
   .version(packageJson.version);
@@ -35,4 +36,19 @@ commander
     });
   });
 
-commander.parseAsync(process.argv);
+commander
+  .command('styles <modulePath>')
+  .description('Validates the css variables in the theme files against the default theme. Outputs any missing vars and has the option to update.')
+  .option('-t, --theme <theme-name>', 'theme name to validate')
+  .option('--report', 'output report on theme coverage')
+  .option('-u, --update', 'update theme files with missing css vars')
+  .action((modulePath, { theme, report, update }) => {
+    validateThemes({
+      modulePath,
+      ...theme && { themes: [theme] },
+      ...update && { update: true },
+      ...report && { report: true },
+    });
+  });
+
+commander.parse(process.argv);
