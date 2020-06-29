@@ -20,7 +20,7 @@
     "url": "https://github.com/emilyrohrbough/personal-toolkit/issues"
   },
   "bin": {
-    "css-vars": "bin/css-vars.js"
+    "em": "bin/em-assist.js"
   },
   "eslintConfig": {
     "extends": "terra",
@@ -40,9 +40,6 @@
         }
       }
     ]
-  },
-  "bin": {
-    "em": "bin/em-assist.js"
   },
   "scripts": {
     "clean": "rm -rf node_modules",

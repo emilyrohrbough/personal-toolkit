@@ -14,8 +14,8 @@ const THEMES = [
   'clinical-lowlight-theme',
 ];
 
-const getDefaultSCSSFiles = modulePath => glob.sync(`${modulePath}/src/*.module.scss`);
-const getThemeFiles = (modulePath, theme) => glob.sync(`${modulePath}/src/${theme}/*.module.scss`);
+const getDefaultSCSSFiles = modulePath => glob.sync(`${modulePath}/src/**/*.module.scss`);
+const getThemeFiles = (modulePath, theme) => glob.sync(`${modulePath}/src/${theme}/**/*.module.scss`);
 const getDeprecatedThemeFiles = (modulePath, theme) => glob.sync(`${modulePath}/themes/${theme}/*.scss`);
 
 const fixParentheses = (cssValue) => {
@@ -35,6 +35,10 @@ const extractVars = (filePath) => {
   const file = fs.readFileSync(filePath, { encoding: 'UTF-8' });
   const varValuePairs = file.match(REGEX);
   const themeVars = {};
+
+  if (!varValuePairs) {
+    return themeVars;
+  }
 
   varValuePairs.forEach((varValuePair) => {
     const cssVar = varValuePair.match(VAR_REGEX)[0];
@@ -93,13 +97,22 @@ const formatThemeVarForOutput = (variable, value, content, endContent) => {
   return { message, endMessage };
 };
 
-const writeThemeFile = (defaultThemeFilePath, theme, themeVars) => {
-  const { dir, base } = path.parse(defaultThemeFilePath);
-  const outputPath = path.resolve(dir, theme, base);
-
-  if (!fs.existsSync(path.resolve(dir, theme))) {
-    fs.mkdirSync(path.resolve(dir, theme));
+const writeThemeFile = (modulePath, defaultThemeFilePath, theme, themeVars) => {
+  if (!Object.entries(themeVars).length) {
+    return;
   }
+
+  const { dir, base } = path.parse(defaultThemeFilePath);
+  let outputDir = path.resolve(modulePath, 'src', theme);
+
+  if (dir.includes('terra-dev-site')) {
+    outputDir = path.resolve(dir, theme);
+  }
+
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir);
+  }
+
   let content = '';
   let endContent = '';
 
@@ -117,7 +130,7 @@ const writeThemeFile = (defaultThemeFilePath, theme, themeVars) => {
   }
   endContent = `${endContent}\n  }\n}\n`;
 
-  fs.writeFileSync(outputPath, `${startContent}${content}${endContent}`);
+  fs.writeFileSync(path.join(outputDir, base), `${startContent}${content}${endContent}`);
 };
 
 const tryRemovingThemeDir = (themeDir) => {
@@ -188,7 +201,7 @@ const validateTheme = ({
 
     // update theme file
     if (update) {
-      writeThemeFile(filePath, theme, updatedThemeVars[fileName]);
+      writeThemeFile(modulePath, filePath, theme, updatedThemeVars[fileName]);
     }
   });
 
